@@ -8,7 +8,7 @@ const doc = {
   },
   servers: [
     {
-      url: "http://localhost:3000/api",
+      url: "http://localhost:3001/api",
       description: "Local Server",
     },
     {
