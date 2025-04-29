@@ -4,7 +4,8 @@ import * as Yup from "yup";
 import UserModel from "../models/user.model";
 import { encrypt } from "../utils/encryption";
 import { generateToken } from "../utils/jwt";
-import { IReqUser } from "../middlewares/auth.middleware";
+import { IReqUser } from "../utils/interfaces";
+import response from "../utils/response";
 
 type TRegister = {
   fullName: string;
@@ -73,16 +74,9 @@ export default {
         password,
       });
 
-      res.status(200).json({
-        message: "Registrasi Sukses",
-        data: result,
-      });
+      response.success(res, result, "Registrasi Sukses");
     } catch (error) {
-      const err = error as unknown as Error;
-      res.status(400).json({
-        message: err.message,
-        data: null,
-      });
+      response.error(res, error, "Registrasi gagal");
     }
   },
 
@@ -112,10 +106,7 @@ export default {
       });
 
       if (!userByIdentifier) {
-        return res.status(403).json({
-          message: "User tidak ditemukan",
-          data: null,
-        });
+        return response.unauthorized(res, "User tidak ditemukan");
       }
 
       // validasi password
@@ -123,10 +114,7 @@ export default {
         encrypt(password) === userByIdentifier.password;
 
       if (!validatePassword) {
-        return res.status(403).json({
-          message: "Password salah",
-          data: null,
-        });
+        return response.unauthorized(res, "Password Salah");
       }
 
       const token = generateToken({
@@ -134,16 +122,9 @@ export default {
         role: userByIdentifier.role,
       });
 
-      res.status(200).json({
-        message: "Login Sukses",
-        data: token,
-      });
+      response.success(res, token, "Login Sukses");
     } catch (error) {
-      const err = error as unknown as Error;
-      res.status(400).json({
-        message: err.message,
-        data: null,
-      });
+      response.error(res, error, "Login Gagal");
     }
   },
 
@@ -159,16 +140,9 @@ export default {
       const user = req.user;
       const result = await UserModel.findById(user?.id);
 
-      res.status(200).json({
-        message: "Sukses mengambil data user",
-        data: result,
-      });
+      response.success(res, result, "Sukses mengambil user profile");
     } catch (error) {
-      const err = error as unknown as Error;
-      res.status(400).json({
-        message: err.message,
-        data: null,
-      });
+      response.error(res, error, "Gagal mengambil user profile");
     }
   },
 
@@ -194,16 +168,10 @@ export default {
           new: true,
         }
       );
-      res.status(200).json({
-        message: "User telah sukses diaktivasi!",
-        data: user,
-      });
+
+      response.success(res, user, "User berhasil diaktivasi");
     } catch (error) {
-      const err = error as unknown as Error;
-      res.status(400).json({
-        message: err.message,
-        data: null,
-      });
+      response.error(res, error, 'User gagal diaktivasi')
     }
   },
 };
