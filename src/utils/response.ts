@@ -20,15 +20,26 @@ export default {
   },
 
   error(res: Response, error: unknown, message: string) {
+    // Handle Yup validation errors
     if (error instanceof Yup.ValidationError) {
       return res.status(400).json({
-        metaa: {
+        meta: { // Fix typo in meta
           status: 400,
-          message,
+          message: error.errors[0] || message,
         },
         data: error.errors,
       });
     }
+
+    // Handle other types of errors
+    console.error('Error details:', error);
+    return res.status(500).json({
+      meta: {
+        status: 500,
+        message: message || 'Internal server error',
+      },
+      data: null,
+    });
   },
 
   unauthorized(res: Response, message: string = "unauthorized") {

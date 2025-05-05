@@ -15,6 +15,29 @@
       "description": "Deploy Server"
     }
   ],
+  "tags": [
+    {
+      "name": "Auth"
+    },
+    {
+      "name": "User"
+    },
+    {
+      "name": "Teacher"
+    },
+    {
+      "name": "Student"
+    },
+    {
+      "name": "MataPelajaran"
+    },
+    {
+      "name": "MateriPelajaran"
+    },
+    {
+      "name": "Media"
+    }
+  ],
   "paths": {
     "/auth/register": {
       "post": {
@@ -23,11 +46,8 @@
         ],
         "description": "",
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
+          "default": {
+            "description": ""
           }
         },
         "requestBody": {
@@ -65,14 +85,8 @@
         ],
         "description": "",
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "403": {
-            "description": "Forbidden"
+          "default": {
+            "description": ""
           }
         },
         "requestBody": {
@@ -99,14 +113,8 @@
         ],
         "description": "",
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "403": {
-            "description": "Forbidden"
+          "default": {
+            "description": ""
           }
         },
         "security": [
@@ -123,11 +131,8 @@
         ],
         "description": "",
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
+          "default": {
+            "description": ""
           }
         },
         "requestBody": {
@@ -141,6 +146,1002 @@
             "application/xml": {
               "schema": {
                 "$ref": "#/components/schemas/ActivationRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/media/upload-single": {
+      "post": {
+        "tags": [
+          "Media"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "file",
+            "in": "formData",
+            "required": true,
+            "description": "File to upload",
+            "schema": {
+              "type": "file"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/media/upload-multiple": {
+      "post": {
+        "tags": [
+          "Media"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "files",
+            "in": "formData",
+            "items": {
+              "type": "file"
+            },
+            "required": true,
+            "description": "Files to upload",
+            "schema": {
+              "type": "array"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/media/remove": {
+      "delete": {
+        "tags": [
+          "Media"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "fileUrl",
+            "in": "query",
+            "required": true,
+            "description": "URL of file to delete",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/users/teachers": {
+      "post": {
+        "tags": [
+          "Teacher"
+        ],
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTeacherRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTeacherRequest"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Teacher"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Items per page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Search term",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/users/teachers/{id}": {
+      "get": {
+        "tags": [
+          "Teacher"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Teacher"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTeacherRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTeacherRequest"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Teacher"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/users/students": {
+      "post": {
+        "tags": [
+          "Student"
+        ],
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateStudentRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateStudentRequest"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Student"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Items per page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Search term",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/users/students/{id}": {
+      "get": {
+        "tags": [
+          "Student"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Student"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateStudentRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateStudentRequest"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Student"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/users": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserRequest"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Items per page",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Search term",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "User ID"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "User"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "User ID"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserRequest"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "User"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "User ID"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/mata-pelajaran": {
+      "post": {
+        "tags": [
+          "MataPelajaran"
+        ],
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "guru": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "MataPelajaran"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "kategori",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "guru",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/mata-pelajaran/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "MataPelajaran"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "MataPelajaran"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/mata-pelajaran/{mataPelajaranId}/materi": {
+      "post": {
+        "tags": [
+          "MateriPelajaran"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "mataPelajaranId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "MateriPelajaran"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "mataPelajaranId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/mata-pelajaran/{mataPelajaranId}/materi/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "mataPelajaranId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "MateriPelajaran"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "mataPelajaranId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "order": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "MateriPelajaran"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "mataPelajaranId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/mata-pelajaran/{mataPelajaranId}/materi/reorder": {
+      "post": {
+        "tags": [
+          "MateriPelajaran"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "mataPelajaranId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "items": {
+                    "example": "any"
+                  }
+                }
               }
             }
           }
@@ -211,7 +1212,260 @@
         "xml": {
           "name": "ActivationRequest"
         }
+      },
+      "CreateUserRequest": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "username": {
+            "type": "string",
+            "example": "johndoe"
+          },
+          "email": {
+            "type": "string",
+            "example": "john@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "Password123"
+          },
+          "role": {
+            "type": "string",
+            "example": "ADMIN"
+          }
+        },
+        "xml": {
+          "name": "CreateUserRequest"
+        }
+      },
+      "UpdateUserRequest": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "username": {
+            "type": "string",
+            "example": "johndoe"
+          },
+          "email": {
+            "type": "string",
+            "example": "john@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "NewPassword123"
+          },
+          "role": {
+            "type": "string",
+            "example": "ADMIN"
+          }
+        },
+        "xml": {
+          "name": "UpdateUserRequest"
+        }
+      },
+      "CreateTeacherRequest": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "example": "Teacher Name"
+          },
+          "email": {
+            "type": "string",
+            "example": "teacher@example.com"
+          },
+          "nrk": {
+            "type": "string",
+            "example": "1234567890"
+          },
+          "noTelp": {
+            "type": "string",
+            "example": "081234567890"
+          }
+        },
+        "xml": {
+          "name": "CreateTeacherRequest"
+        }
+      },
+      "UpdateTeacherRequest": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "example": "Teacher Name"
+          },
+          "email": {
+            "type": "string",
+            "example": "teacher@example.com"
+          },
+          "nrk": {
+            "type": "string",
+            "example": "1234567890"
+          },
+          "noTelp": {
+            "type": "string",
+            "example": "081234567890"
+          }
+        },
+        "xml": {
+          "name": "UpdateTeacherRequest"
+        }
+      },
+      "CreateStudentRequest": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "example": "Student Name"
+          },
+          "email": {
+            "type": "string",
+            "example": "student@example.com"
+          },
+          "nis": {
+            "type": "string",
+            "example": "1234567890"
+          },
+          "kelas": {
+            "type": "string",
+            "example": "X IPA 1"
+          },
+          "noTelp": {
+            "type": "string",
+            "example": "081234567890"
+          }
+        },
+        "xml": {
+          "name": "CreateStudentRequest"
+        }
+      },
+      "UpdateStudentRequest": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "example": "Student Name"
+          },
+          "email": {
+            "type": "string",
+            "example": "student@example.com"
+          },
+          "nis": {
+            "type": "string",
+            "example": "1234567890"
+          },
+          "kelas": {
+            "type": "string",
+            "example": "X IPA 1"
+          },
+          "noTelp": {
+            "type": "string",
+            "example": "081234567890"
+          }
+        },
+        "xml": {
+          "name": "UpdateStudentRequest"
+        }
+      },
+      "CreateMataPelajaranRequest": {
+        "type": "object",
+        "properties": {
+          "judul": {
+            "type": "string",
+            "example": "Matematika Dasar"
+          },
+          "deskripsi": {
+            "type": "string",
+            "example": "Pelajaran matematika dasar"
+          },
+          "kategori": {
+            "type": "string",
+            "example": "KELAS_7"
+          }
+        },
+        "xml": {
+          "name": "CreateMataPelajaranRequest"
+        }
+      },
+      "UpdateMataPelajaranRequest": {
+        "type": "object",
+        "properties": {
+          "judul": {
+            "type": "string",
+            "example": "Matematika Dasar"
+          },
+          "deskripsi": {
+            "type": "string",
+            "example": "Pelajaran matematika dasar"
+          },
+          "kategori": {
+            "type": "string",
+            "example": "KELAS_7"
+          }
+        },
+        "xml": {
+          "name": "UpdateMataPelajaranRequest"
+        }
+      },
+      "CreateMateriPelajaranRequest": {
+        "type": "object",
+        "properties": {
+          "judul": {
+            "type": "string",
+            "example": "Persamaan Linear"
+          },
+          "deskripsi": {
+            "type": "string",
+            "example": "Materi tentang persamaan linear"
+          },
+          "konten": {
+            "type": "string",
+            "example": "Konten materi dalam format HTML"
+          },
+          "order": {
+            "type": "number",
+            "example": 1
+          }
+        },
+        "xml": {
+          "name": "CreateMateriPelajaranRequest"
+        }
+      },
+      "UpdateMateriPelajaranRequest": {
+        "type": "object",
+        "properties": {
+          "judul": {
+            "type": "string",
+            "example": "Persamaan Linear"
+          },
+          "deskripsi": {
+            "type": "string",
+            "example": "Materi tentang persamaan linear"
+          },
+          "konten": {
+            "type": "string",
+            "example": "Konten materi dalam format HTML"
+          },
+          "order": {
+            "type": "number",
+            "example": 1
+          }
+        },
+        "xml": {
+          "name": "UpdateMateriPelajaranRequest"
+        }
       }
     }
-  }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ]
 }
