@@ -1,7 +1,6 @@
 import { Response } from "express";
 import * as Yup from "yup";
 
-
 type Pagination = {
     totalPages: number;
     current: number;
@@ -9,8 +8,8 @@ type Pagination = {
 }
 
 export default {
-  success(res: Response, data: any, message: string) {
-    res.status(200).json({
+  success(res: Response, data: any, message: string): Response {
+    return res.status(200).json({
       meta: {
         status: 200,
         message,
@@ -19,11 +18,11 @@ export default {
     });
   },
 
-  error(res: Response, error: unknown, message: string) {
+  error(res: Response, error: unknown, message: string): Response {
     // Handle Yup validation errors
     if (error instanceof Yup.ValidationError) {
       return res.status(400).json({
-        meta: { // Fix typo in meta
+        meta: {
           status: 400,
           message: error.errors[0] || message,
         },
@@ -42,8 +41,8 @@ export default {
     });
   },
 
-  unauthorized(res: Response, message: string = "unauthorized") {
-    res.status(403).json({
+  unauthorized(res: Response, message: string = "unauthorized"): Response {
+    return res.status(403).json({
       meta: {
         status: 403,
         message,
@@ -57,14 +56,14 @@ export default {
     data: any[],
     pagination: Pagination,
     message: string
-  ) {
-    res.status(200).json({
+  ): Response {
+    return res.status(200).json({
         meta: {
             status: 200,
             message,
         },
         data,
         pagination
-    })
+    });
   },
 };

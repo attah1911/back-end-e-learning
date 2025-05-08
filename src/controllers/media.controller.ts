@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
 import response from "../utils/response";
 import uploader from "../utils/uploader";
+import { CloudinaryResponse } from "../utils/interfaces";
 
-export default {
+const mediaController = {
   /**
    * @swagger
    * /media/upload-single:
@@ -72,7 +73,7 @@ export default {
       }
 
       console.log("[Media Controller] Starting Cloudinary upload");
-      const result = await uploader.uploadSingle(file);
+      const result = await uploader.uploadSingle(file) as CloudinaryResponse;
       console.log("[Media Controller] Upload successful:", {
         publicId: result.public_id,
         url: result.secure_url,
@@ -88,7 +89,7 @@ export default {
         format: result.format,
       };
 
-      response.success(res, fileData, "Sukses upload file");
+      return response.success(res, fileData, "Sukses upload file");
     } catch (error: any) {
       console.error("Error in media controller:", {
         message: error.message,
@@ -150,12 +151,12 @@ export default {
     try {
       const files = req.files as Express.Multer.File[];
       if (!files || !files.length) {
-        return response.error(res, null, "No files uploaded");
+        return response.error(res, null, "Tidak ada file yang dipilih");
       }
-      const results = await uploader.uploadMultiple(files);
-      response.success(res, results, "Sukses upload file");
+      const results = await uploader.uploadMultiple(files) as CloudinaryResponse[];
+      return response.success(res, results, "Sukses upload file");
     } catch (error) {
-      response.error(res, error, "Gagal upload file");
+      return response.error(res, error, "Gagal upload file");
     }
   },
 
@@ -191,14 +192,16 @@ export default {
     try {
       const { fileUrl } = req.query;
 
-      if (!fileUrl) {
-        return response.error(res, null, "File URL is required");
+      if (!fileUrl || typeof fileUrl !== 'string') {
+        return response.error(res, null, "URL file tidak valid");
       }
 
-      const result = await uploader.remove(fileUrl as string);
-      response.success(res, result, "Sukses menghapus file");
+      const result = await uploader.remove(fileUrl);
+      return response.success(res, result, "Sukses menghapus file");
     } catch (error) {
-      response.error(res, error, "Gagal menghapus file");
+      return response.error(res, error, "Gagal menghapus file");
     }
   },
 };
+
+export default mediaController;
