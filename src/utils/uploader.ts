@@ -40,49 +40,35 @@ const getPublicIdFromFileUrl = (fileUrl: string) => {
 export default {
   async uploadSingle(file: Express.Multer.File) {
     try {
-      // Validate Cloudinary configuration
       if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_API_KEY || !CLOUDINARY_API_SECRET) {
-        console.error("Missing Cloudinary configuration:", {
-          cloudName: CLOUDINARY_CLOUD_NAME ? "Set" : "Missing",
-          apiKey: CLOUDINARY_API_KEY ? "Set" : "Missing",
-          apiSecret: CLOUDINARY_API_SECRET ? "Set" : "Missing"
-        });
         throw new Error("Cloudinary configuration is incomplete");
       }
-
-      if (!file) {
-        throw new Error("No file provided");
-      }
-
-      console.log("Converting file to data URL...");
-      const fileDataURL = toDataURL(file);
-      
-      console.log("Uploading to Cloudinary...");
-      const result = await cloudinary.uploader.upload(fileDataURL, {
-        resource_type: "auto",
-        folder: "profile-pictures",
-        transformation: [
-          { width: 400, height: 400, crop: "fill" },
-          { quality: "auto" }
-        ]
+  
+      // Stream upload instead of base64
+      return new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          {
+            resource_type: "auto",
+            folder: "profile-pictures",
+            transformation: [
+              { width: 400, height: 400, crop: "fill" },
+              { quality: "auto" }
+            ]
+          },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+  
+        uploadStream.end(file.buffer);
       });
-      
-      console.log("Upload successful:", {
-        publicId: result.public_id,
-        url: result.secure_url,
-        size: result.bytes
-      });
-      
-      return result;
     } catch (error: any) {
-      console.error("Error in uploadSingle:", {
-        message: error.message,
-        stack: error.stack,
-        details: error.error || error
-      });
-      throw new Error(`Failed to upload file: ${error.message}`);
+      console.error("Upload error:", error);
+      throw error;
     }
   },
+  
 
   async uploadMultiple(files: Express.Multer.File[]) {
     const uploadBatch = files.map((item) => {
