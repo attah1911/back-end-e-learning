@@ -8,12 +8,6 @@ import { ROLES } from "../utils/constant";
 
 export default {
   async create(req: IReqUser, res: Response) {
-    /**
-     #swagger.tags = ['MataPelajaran']
-     #swagger.security = [{
-       "bearerAuth": []
-     }]
-     */
     const session = await mongoose.startSession();
     session.startTransaction();
 
@@ -34,8 +28,12 @@ export default {
         guru: guruId
       }], { session });
 
+      // Populate the guru data before sending response
+      const populatedMataPelajaran = await MataPelajaranModel.findById(mataPelajaran[0]._id)
+        .populate('guru', 'fullName email nip');
+
       await session.commitTransaction();
-      response.success(res, mataPelajaran[0], "Sukses membuat mata pelajaran");
+      response.success(res, populatedMataPelajaran, "Sukses membuat mata pelajaran");
     } catch (error) {
       await session.abortTransaction();
       response.error(res, error, "Gagal membuat mata pelajaran");
@@ -45,12 +43,6 @@ export default {
   },
 
   async findAll(req: IReqUser, res: Response) {
-    /**
-     #swagger.tags = ['MataPelajaran']
-     #swagger.security = [{
-       "bearerAuth": []
-     }]
-     */
     const {
       page = 1,
       limit = 10,
@@ -62,7 +54,6 @@ export default {
     try {
       const query: any = {};
 
-      // Add search condition
       if (search) {
         Object.assign(query, {
           $or: [
@@ -72,17 +63,14 @@ export default {
         });
       }
 
-      // Add kategori filter
       if (kategori) {
         query.kategori = kategori;
       }
 
-      // Add guru filter
       if (guru) {
         query.guru = guru;
       }
 
-      // If user is a guru, only show their mata pelajaran
       if (req.user?.role === ROLES.GURU) {
         const teacher = await mongoose.model('Teacher').findOne({ userId: req.user.id });
         if (!teacher) {
@@ -92,7 +80,7 @@ export default {
       }
 
       const result = await MataPelajaranModel.find(query)
-        .populate('guru', '-userId')
+        .populate('guru', 'fullName email nip') // Include necessary teacher fields
         .populate({
           path: 'materiPelajaranList',
           options: { sort: { order: 1 } }
@@ -119,17 +107,11 @@ export default {
   },
 
   async findOne(req: IReqUser, res: Response) {
-    /**
-     #swagger.tags = ['MataPelajaran']
-     #swagger.security = [{
-       "bearerAuth": []
-     }]
-     */
     try {
       const { id } = req.params;
 
       const result = await MataPelajaranModel.findById(id)
-        .populate('guru', '-userId')
+        .populate('guru', 'fullName email nip')
         .populate({
           path: 'materiPelajaranList',
           options: { sort: { order: 1 } }
@@ -139,7 +121,6 @@ export default {
         return response.error(res, null, "Data mata pelajaran tidak ditemukan");
       }
 
-      // If user is a guru, verify ownership
       if (req.user?.role === ROLES.GURU) {
         const teacher = await mongoose.model('Teacher').findOne({ userId: req.user.id });
         if (!teacher || result.guru._id.toString() !== teacher._id.toString()) {
@@ -154,28 +135,19 @@ export default {
   },
 
   async update(req: IReqUser, res: Response) {
-    /**
-     #swagger.tags = ['MataPelajaran']
-     #swagger.security = [{
-       "bearerAuth": []
-     }]
-     */
     const session = await mongoose.startSession();
     session.startTransaction();
 
     try {
       const { id } = req.params;
 
-      // Validate input
       await mataPelajaranDAO.validate(req.body);
 
-      // Get existing mata pelajaran
       const mataPelajaran = await MataPelajaranModel.findById(id);
       if (!mataPelajaran) {
         return response.error(res, null, "Data mata pelajaran tidak ditemukan");
       }
 
-      // If user is a guru, verify ownership
       if (req.user?.role === ROLES.GURU) {
         const teacher = await mongoose.model('Teacher').findOne({ userId: req.user.id });
         if (!teacher || mataPelajaran.guru.toString() !== teacher._id.toString()) {
@@ -183,12 +155,11 @@ export default {
         }
       }
 
-      // Update mata pelajaran
       const result = await MataPelajaranModel.findByIdAndUpdate(
         id,
         req.body,
         { new: true, session }
-      ).populate('guru', '-userId')
+      ).populate('guru', 'fullName email nip')
        .populate({
          path: 'materiPelajaranList',
          options: { sort: { order: 1 } }
@@ -205,25 +176,17 @@ export default {
   },
 
   async remove(req: IReqUser, res: Response) {
-    /**
-     #swagger.tags = ['MataPelajaran']
-     #swagger.security = [{
-       "bearerAuth": []
-     }]
-     */
     const session = await mongoose.startSession();
     session.startTransaction();
 
     try {
       const { id } = req.params;
 
-      // Get existing mata pelajaran
       const mataPelajaran = await MataPelajaranModel.findById(id);
       if (!mataPelajaran) {
         return response.error(res, null, "Data mata pelajaran tidak ditemukan");
       }
 
-      // If user is a guru, verify ownership
       if (req.user?.role === ROLES.GURU) {
         const teacher = await mongoose.model('Teacher').findOne({ userId: req.user.id });
         if (!teacher || mataPelajaran.guru.toString() !== teacher._id.toString()) {
@@ -231,13 +194,11 @@ export default {
         }
       }
 
-      // Delete all related materi pelajaran
       await MateriPelajaranModel.deleteMany(
         { mataPelajaran: id },
         { session }
       );
 
-      // Delete mata pelajaran
       await MataPelajaranModel.findByIdAndDelete(id, { session });
 
       await session.commitTransaction();
@@ -248,5 +209,5 @@ export default {
     } finally {
       session.endSession();
     }
-  },
+  }
 };

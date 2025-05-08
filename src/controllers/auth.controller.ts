@@ -6,6 +6,7 @@ import { encrypt } from "../utils/encryption";
 import { generateToken } from "../utils/jwt";
 import { IReqUser } from "../utils/interfaces";
 import response from "../utils/response";
+import { userUpdateDAO } from "../models/user.dao";
 
 type TRegister = {
   fullName: string;
@@ -51,6 +52,67 @@ const registerValidateSchema = Yup.object({
 });
 
 export default {
+  async updateProfile(req: IReqUser, res: Response) {
+    /**
+     #swagger.tags = ['Auth']
+     #swagger.security = [{
+       "bearerAuth": []
+     }]
+     */
+    try {
+      const user = req.user;
+      const { fullName, username, email, profilePicture } = req.body;
+
+      // Only allow updating these fields
+      const updateData = {
+        fullName,
+        username,
+        email,
+        profilePicture
+      };
+
+      // Validate the update data
+      await userUpdateDAO.validate(updateData);
+
+      // Check if username is already taken
+      if (updateData.username) {
+        const existingUser = await UserModel.findOne({
+          username: updateData.username,
+          _id: { $ne: user?.id }
+        });
+        if (existingUser) {
+          return response.error(res, null, "Username sudah digunakan");
+        }
+      }
+
+      // Check if email is already taken
+      if (updateData.email) {
+        const existingUser = await UserModel.findOne({
+          email: updateData.email,
+          _id: { $ne: user?.id }
+        });
+        if (existingUser) {
+          return response.error(res, null, "Email sudah digunakan");
+        }
+      }
+
+      // Update user data
+      const result = await UserModel.findByIdAndUpdate(
+        user?.id,
+        updateData,
+        { new: true }
+      );
+
+      if (!result) {
+        return response.error(res, null, "Data pengguna tidak ditemukan");
+      }
+
+      response.success(res, result, "Sukses mengupdate profil");
+    } catch (error) {
+      response.error(res, error, "Gagal mengupdate profil");
+    }
+  },
+
   async register(req: Request, res: Response) {
     /**
      #swagger.tags = ['Auth']

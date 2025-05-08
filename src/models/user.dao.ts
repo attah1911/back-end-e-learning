@@ -34,13 +34,10 @@ export const userDAO = Yup.object({
 });
 
 export const userUpdateDAO = Yup.object({
-  fullName: Yup.string(),
-  username: Yup.string(),
-  email: Yup.string().email(),
-  password: passwordValidation,
-  role: Yup.string().oneOf([ROLES.ADMIN, ROLES.GURU, ROLES.MURID]),
-  profilePicture: Yup.string(),
-  isActive: Yup.boolean(),
+  fullName: Yup.string().required("Nama lengkap harus diisi"),
+  username: Yup.string().required("Username harus diisi"),
+  email: Yup.string().email("Format email tidak valid").required("Email harus diisi"),
+  profilePicture: Yup.string().nullable()
 });
 
 export const userCreateTeacherDAO = Yup.object({

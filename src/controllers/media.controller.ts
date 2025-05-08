@@ -35,14 +35,79 @@ export default {
      }
      */
     try {
-      const file = req.file;
-      if (!file) {
-        return response.error(res, null, "No file uploaded");
+      console.log("[Media Controller] Starting file upload process");
+      console.log("[Media Controller] Headers:", JSON.stringify(req.headers, null, 2));
+      
+      // Check if request is multipart
+      const contentType = req.headers['content-type'] || '';
+      if (!contentType.includes('multipart/form-data')) {
+        console.error("[Media Controller] Invalid content type:", contentType);
+        return response.error(res, null, "Invalid request format. Expected multipart/form-data");
       }
+
+      const file = req.file;
+      console.log("[Media Controller] File object:", file ? {
+        fieldname: file.fieldname,
+        originalname: file.originalname,
+        mimetype: file.mimetype,
+        size: file.size,
+        buffer: file.buffer ? 'Buffer present' : 'No buffer'
+      } : 'No file');
+
+      if (!file) {
+        console.error("[Media Controller] No file received");
+        return response.error(res, null, "Tidak ada file yang dipilih");
+      }
+
+      // Validate file type
+      if (!file.mimetype.startsWith('image/')) {
+        console.error("[Media Controller] Invalid file type:", file.mimetype);
+        return response.error(res, null, "File harus berupa gambar");
+      }
+
+      // Validate file size (2MB)
+      if (file.size > 2 * 1024 * 1024) {
+        console.error("[Media Controller] File too large:", file.size);
+        return response.error(res, null, "Ukuran file terlalu besar (maksimal 2MB)");
+      }
+
+      console.log("[Media Controller] Starting Cloudinary upload");
       const result = await uploader.uploadSingle(file);
-      response.success(res, result, "Sukses upload file");
-    } catch (error) {
-      response.error(res, error, "Gagal upload file");
+      console.log("[Media Controller] Upload successful:", {
+        publicId: result.public_id,
+        url: result.secure_url,
+        size: result.bytes
+      });
+      
+      // Return only necessary data
+      const fileData = {
+        url: result.secure_url,
+        publicId: result.public_id,
+        width: result.width,
+        height: result.height,
+        format: result.format,
+      };
+
+      response.success(res, fileData, "Sukses upload file");
+    } catch (error: any) {
+      console.error("Error in media controller:", {
+        message: error.message,
+        stack: error.stack,
+        type: error.constructor.name,
+        details: error.error || error
+      });
+
+      // Check for specific error types
+      if (error.message.includes("Cloudinary configuration")) {
+        return response.error(res, error, "Konfigurasi upload tidak valid");
+      }
+      
+      if (error.message.includes("buffer")) {
+        return response.error(res, error, "File tidak dapat diproses");
+      }
+
+      const errorMessage = error.message || "Gagal upload file";
+      return response.error(res, error, errorMessage);
     }
   },
 
